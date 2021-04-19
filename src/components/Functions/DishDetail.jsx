@@ -25,19 +25,27 @@ function DishDetail(props){
         })
     }
 
-    return(
-        <div className="row">
-            <div className="col-12 col-md-5 m-1">
-                {renderDish(props.dish)}
+    if(props.dish != null){
+        return(
+            <div className="container">
+                <div className="row">
+                    <div className="col-12 col-md-5 m-2 p-0">
+                        {renderDish(props.dish)}
+                    </div>
+                    <div className="col-12 col-md-5 m-2 p-0">
+                        <h4>Comments</h4>
+                        <ListGroup>
+                            {renderComments(props.dish.comments)}
+                        </ListGroup>
+                    </div>
+                </div>
             </div>
-            <div className="col-12 col-md-5 m-1">
-                <h4>Comments</h4>
-                <ListGroup>
-                    {renderComments(props.dish.comments)}
-                </ListGroup>
-            </div>
-        </div>
-    );
+        );
+    }else{
+        return(
+            <div></div>
+        )
+    }
 
 }
 
