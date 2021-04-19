@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Card , CardTitle , CardText , CardImg , CardImgOverlay , CardBody } from "reactstrap";
+import DishDetail from './DishDetail';
 
 function Menu(props) {
   const [dish, setDishes] = useState(null);
@@ -12,13 +13,7 @@ function Menu(props) {
   function renderDish(){
     if(dish != null){
       return (
-        <Card>
-          <CardImg top src={dish.image} alt={dish.name} />
-          <CardBody>
-            <CardTitle>{dish.name}</CardTitle>
-            <CardText>{dish.description}</CardText>
-          </CardBody>
-        </Card>
+        <DishDetail dish={dish} />        
       );
     }
   }
