@@ -3,6 +3,7 @@ import { Navbar , NavbarBrand } from 'reactstrap';
 import './App.css';
 import Menu from './components/Menu';
 import MenuClass from './components/MenuClass'
+import Dishes from './shared/dishes'
 
 function App() {
   return (
@@ -12,8 +13,8 @@ function App() {
           <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
         </div>
       </Navbar>
-      <Menu />
-      <MenuClass/>
+      <Menu dishes={Dishes} />
+      <MenuClass dishes={Dishes} />
     </div>
   );
 }
