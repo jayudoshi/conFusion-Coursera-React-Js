@@ -1,9 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, useLayoutEffect } from 'react';
 import MenuClass from './MenuClass'
 import DishDetailComponentClass from './DishDetailComponentClass';
-import Dishes from '../shared/dishes'
 import Header from './HeaderClass';
 import Footer from './FooterComponent';
+import { Switch , Route , Redirect } from 'react-router-dom'
+import Home from './HomeComponent';
+import { Collapse } from 'bootstrap';
+import Dishes from '../shared/dishes'
+import Comments from '../shared/comments';
+import Promotions from '../shared/promotions';
+import Leaders from '../shared/leader'
+import ContactUs from './ContactUs';
 
 class MainClass extends Component{
     
@@ -11,30 +18,46 @@ class MainClass extends Component{
         super(props);
         this.state = {
             dishes : Dishes,
+            comments : Comments,
+            promotions : Promotions,
+            leaders : Leaders,
             selectedDish : null
         }
-        this.handleClick = this.handleClick.bind(this);
     }
 
-    handleClick(dishId){
-        this.setState({ selectedDish: dishId});
-    }
-
-    sendDish(){
-        const dish = this.state.dishes.filter((dish)=>{
-            return dish.id === this.state.selectedDish;
-        })[0];
-        console.log(dish);
-        return dish;
+    dishWithId = ({match})=>{        
+        return (
+            <DishDetailComponentClass dish={
+                this.state.dishes.filter( dish => dish.id === parseInt(match.params.dishId))[0]
+                }
+            comments={
+                this.state.comments.filter(comment => comment.dishId === parseInt(match.params.dishId))
+                }
+            />
+        );
     }
 
     render(){
         return(
             <div className="App">
                 <Header />
-                <MenuClass dishes={this.state.dishes} onClick={this.handleClick} />
-                <DishDetailComponentClass dish={this.sendDish()} />
-                <Footer />>
+                <Switch>
+                    <Route path='/home' component={()=>{
+                        return <Home dish = {this.state.dishes.filter((dish)=> dish.featured)[0]}
+                            promotion = {this.state.promotions.filter((promotion)=> promotion.featured)[0]}
+                            leader = {this.state.leaders.filter((leader)=> leader.featured)[0]}
+                        />
+                        }
+                    }
+                    />
+                    <Route exact path='/menu' component={()=>{
+                        return <MenuClass dishes={this.state.dishes} />;
+                    }}/>
+                    <Route path='/menu/:dishId' component={this.dishWithId} />
+                    <Route exact path='/contactus' component={ContactUs}/>
+                    <Redirect to='/home' />
+                </Switch>
+                <Footer />
             </div>           
         );
     }

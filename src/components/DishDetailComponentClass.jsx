@@ -1,5 +1,6 @@
 import React , {Component} from 'react';
-import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroupItem} from 'reactstrap'
+import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroupItem , Breadcrumb , BreadcrumbItem} from 'reactstrap'
+import {Link} from 'react-router-dom';
 class DishDetailComponentClass extends Component{
 
     constructor(props){
@@ -32,8 +33,19 @@ class DishDetailComponentClass extends Component{
         }
 
         if(this.props.dish != null){
+            console.log(this.props.dish);
             return(
                 <div className="container">
+                    <div className="row">
+                        <Breadcrumb>
+                            <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
+                            <BreadcrumbItem active>{this.props.dish.name}</BreadcrumbItem>
+                        </Breadcrumb>
+                        <div className="col-12">
+                            <h3>{this.props.dish.name}</h3>
+                            <hr />
+                        </div>                
+                    </div>
                     <div className="row">
                         <div className="col-12 col-md-5 m-1">
                             {renderDish(this.props.dish)};
@@ -41,7 +53,7 @@ class DishDetailComponentClass extends Component{
                         <div className="col-12 col-md-5 m-1">
                             <h4>Comments</h4>
                             <ListGroup>
-                                {renderComments(this.props.dish.comments)}
+                                {renderComments(this.props.comments)}
                             </ListGroup>
                         </div>
                     </div>
