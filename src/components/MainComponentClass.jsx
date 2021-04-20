@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Navbar , NavbarBrand } from 'reactstrap';
 import MenuClass from './MenuClass'
 import DishDetailComponentClass from './DishDetailComponentClass';
 import Dishes from '../shared/dishes'
+import Header from './HeaderClass';
+import Footer from './FooterComponent';
 
 class MainClass extends Component{
     
@@ -30,13 +31,10 @@ class MainClass extends Component{
     render(){
         return(
             <div className="App">
-                <Navbar dark color="primary">
-                    <div className="container">
-                        <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
-                    </div>
-                </Navbar>
+                <Header />
                 <MenuClass dishes={this.state.dishes} onClick={this.handleClick} />
                 <DishDetailComponentClass dish={this.sendDish()} />
+                <Footer />>
             </div>           
         );
     }
