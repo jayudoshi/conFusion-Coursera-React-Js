@@ -1,8 +1,7 @@
 import React , {useState} from 'react';
-import {BreadcrumbItem , Breadcrumb , Form , FormGroup , Input , Button , Col, Label } from 'reactstrap'
+import {BreadcrumbItem , Breadcrumb , Form , FormGroup , Input , Button , Col, Label , FormFeedback } from 'reactstrap'
 import {Link} from 'react-router-dom'
 function ContactUsTrial(props){
-    
     const [formDetails , setFormDetails] = useState({
         fname : '', 
         lname : '',
@@ -10,19 +9,38 @@ function ContactUsTrial(props){
         email : '',
         agree : false,
         contactType : 'Tel',
-        message : ''
+        message : '',
+        touched : {
+            fname : false,
+            lname : false,
+            telno : false,
+            email : false
+        }
     })
+
+    function handelOnBlur(event){
+        setFormDetails( prevState=> (
+            {
+                ...prevState,
+                touched : {
+                    ...(prevState.touched) ,
+                    [event.target.name] : true
+                }
+            }
+        ) )
+        errors = validate();
+    }
 
 
     function handelInputChange(event){
         const target = event.target;
         const name = target.name;
         const value = target.type==='checkbox' ? target.checked : target.value;
-
         setFormDetails(prevState=>({
             ...prevState,
             [name] : value
         }));
+ 
     }
 
     function handleSubmit(event){
@@ -30,6 +48,40 @@ function ContactUsTrial(props){
         console.log(JSON.stringify(formDetails));
         event.preventDefault();
     }
+
+    function validate() {
+        const errors = {
+            fname : '',
+            lname : '',
+            telno : '',
+            email : ''
+        }
+
+        if(formDetails.touched.fname && formDetails.fname.length <= 3 ){
+            errors.fname = "First Name should be of minimum 3 characters long";
+        }else if(formDetails.touched.fname && formDetails.fname.length > 10 ){
+            errors.fname= "First Name can be of maximum of 10 characters long";
+        }
+
+        if(formDetails.touched.lname && formDetails.lname.length <=3 ){
+            errors.lname = "Last Name should be of minimum 3 characters long";
+        }else if(formDetails.touched.lname && formDetails.lname.length > 10 ){
+            errors.lname = "Last Name can be maximum of 10 characters long";
+        }
+
+        const regx = /^\d+$/;
+        if(formDetails.touched.telno && !regx.test(formDetails.telno) ){
+            errors.telno = "Tel. Number should contain only numbers"
+        }
+
+        if(formDetails.touched.email && formDetails.email.split('').filter(x => x==='@').length !== 1){
+            errors.email = 'Email should contain a @';
+        }
+
+        return errors;
+    }
+
+    let errors = validate()
 
     return(
         <div className="container">
@@ -80,8 +132,11 @@ function ContactUsTrial(props){
                             <Col md={10}>
                                 <Input type="text" id="fname" name="fname" bsSize="lg"
                                     placeholder='First Name' value={formDetails.fname}
-                                    onChange={handelInputChange}
+                                    onChange={handelInputChange} onBlur={handelOnBlur}
+                                    valid={formDetails.touched.fname && errors.fname === ''}
+                                    invalid={formDetails.touched.fname && errors.fname !== ''}
                                 />
+                                <FormFeedback>{errors.fname}</FormFeedback>
                             </Col>
                         </FormGroup>
                         <FormGroup className="row">
@@ -89,8 +144,11 @@ function ContactUsTrial(props){
                             <Col md={10}>
                                 <Input type="text" id="lname" name="lname" bsSize="lg"
                                     placeholder='Last Name' value={formDetails.lname}
-                                    onChange={handelInputChange}
+                                    onChange={handelInputChange} onBlur={handelOnBlur}
+                                    valid={formDetails.touched.lname && errors.lname === ''}
+                                    invalid={formDetails.touched.lname && errors.lname !== ''}
                                 />
+                                <FormFeedback>{errors.lname}</FormFeedback>
                             </Col>
                         </FormGroup>
                         <FormGroup className="row">
@@ -98,17 +156,23 @@ function ContactUsTrial(props){
                             <Col md={10}>
                                 <Input type="number" id="telno" name="telno" bsSize="lg"
                                     placeholder="Tel No." value={formDetails.telno}
-                                    onChange={handelInputChange}
+                                    onChange={handelInputChange} onBlur={handelOnBlur}
+                                    valid={formDetails.touched.telno && errors.telno === ''}
+                                    invalid={formDetails.touched.telno && errors.telno !== ''}
                                 />
+                                <FormFeedback>{errors.telno}</FormFeedback>
                             </Col>
                         </FormGroup>
                         <FormGroup className="row">
                             <Label htmlFor="email" className="col-2" size="lg">Email</Label>
                             <Col md={10}>
                                 <Input type="email" id="email" name="email" bsSize="lg"
-                                    placevalue={formDetails.email}
-                                    onChange={handelInputChange}
+                                    placeholder="Email" value={formDetails.email}
+                                    onChange={handelInputChange} onBlur={handelOnBlur}
+                                    valid={formDetails.touched.email && errors.email === ''}
+                                    invalid={formDetails.touched.email && errors.email !== ''}
                                 />
+                                <FormFeedback>{errors.email}</FormFeedback>
                             </Col>
                         </FormGroup>
                         <FormGroup className="row">
