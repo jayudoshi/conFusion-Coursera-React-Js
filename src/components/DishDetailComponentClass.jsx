@@ -1,6 +1,7 @@
 import React , {Component} from 'react';
-import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroupItem , Breadcrumb , BreadcrumbItem} from 'reactstrap'
+import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroupItem , Breadcrumb , BreadcrumbItem, Button} from 'reactstrap'
 import {Link} from 'react-router-dom';
+import CommentForm from './CommentForm';
 class DishDetailComponentClass extends Component{
 
     constructor(props){
@@ -55,6 +56,7 @@ class DishDetailComponentClass extends Component{
                             <ListGroup>
                                 {renderComments(this.props.comments)}
                             </ListGroup>
+                            <CommentForm />
                         </div>
                     </div>
                 </div>
