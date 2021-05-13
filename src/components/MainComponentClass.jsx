@@ -10,6 +10,18 @@ import { Collapse } from 'bootstrap';
 import About from './AboutUs';
 import ContactUsTrial from './ContactUsTrial';
 import {connect} from 'react-redux'
+import {addComments,fetchDishes} from '../redux/ActionCreators'
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addComments: (dishId , rating , author , comment)=> { 
+            dispatch(addComments(dishId , rating , author , comment)) 
+        },
+
+        fetchDishes: () => {dispatch(fetchDishes())}
+
+    }
+}
 
 const mapStateToProps = (state) =>{
     return {
@@ -26,15 +38,21 @@ class MainClass extends Component{
         super(props);
     }
 
+    componentDidMount(){
+        this.props.fetchDishes();
+    }
+
     dishWithId = ({match})=>{ 
-        console.log(this.props.dishes)       
         return (
             <DishDetailComponentClass dish={
-                this.props.dishes.filter( dish => dish.id === parseInt(match.params.dishId))[0]
+                this.props.dishes.dishes.filter( dish => dish.id === parseInt(match.params.dishId))[0]
                 }
-            comments={
-                this.props.comments.filter(comment => comment.dishId === parseInt(match.params.dishId))
-                }
+                isLoading={this.props.dishes.isLoading}
+                errMsg={this.props.dishes.errMsg}
+                comments={
+                    this.props.comments.filter(comment => comment.dishId === parseInt(match.params.dishId))
+                    }
+                addComments = {this.props.addComments}
             />
         );
     }
@@ -45,7 +63,9 @@ class MainClass extends Component{
                 <Header />
                 <Switch>
                     <Route path='/home' component={()=>{
-                        return <Home dish = {this.props.dishes.filter((dish) => dish.featured)[0]}
+                        return <Home dish = {this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
+                            isLoading={this.props.dishes.isLoading}
+                            errMsg={this.props.dishes.errMsg}
                             promotion = {this.props.promotions.filter((promotion) => promotion.featured)[0]}
                             leader = {this.props.leaders.filter((leader) => leader.featured)[0]}
                         />
@@ -53,7 +73,10 @@ class MainClass extends Component{
                     }
                     />
                     <Route exact path='/menu' component={()=>{
-                        return <MenuClass dishes={this.props.dishes} />;
+                        return <MenuClass dishes={this.props.dishes.dishes} 
+                                isLoading={this.props.dishes.isLoading}
+                                errMsg={this.props.dishes.errMsg}
+                            />;
                     }}/>
                     <Route path='/menu/:dishId' component={this.dishWithId} />
                     <Route exact path='/contactus' component={ContactUsTrial}/>
@@ -67,4 +90,4 @@ class MainClass extends Component{
 
 }
 
-export default withRouter(connect(mapStateToProps)(MainClass)) 
+export default withRouter(connect(mapStateToProps,mapDispatchToProps)(MainClass)) 

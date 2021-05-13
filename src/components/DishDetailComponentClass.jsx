@@ -2,6 +2,8 @@ import React , {Component} from 'react';
 import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroupItem , Breadcrumb , BreadcrumbItem, Button} from 'reactstrap'
 import {Link} from 'react-router-dom';
 import CommentForm from './CommentForm';
+import LoadingComponent from './LoadingComponent'
+
 class DishDetailComponentClass extends Component{
 
     constructor(props){
@@ -26,15 +28,26 @@ class DishDetailComponentClass extends Component{
             return comments.map((comment)=>{
                 return(
                     <ListGroupItem className="border-0 p-0" key={comment.id}>
-                        <p>{comment.comment}</p>
+                        <p><span>{comment.rating}</span> {comment.comment}</p> 
                         <p>-- {comment.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
                     </ListGroupItem>
                 );
             })
         }
 
-        if(this.props.dish != null){
-            console.log(this.props.dish);
+        if(this.props.isLoading){
+            return <div className="container">
+                <div className="row">
+                    <LoadingComponent />
+                </div>
+            </div>
+        }else if(this.props.errMsg){
+            return <div className="container">
+                <div className="row">
+                    <h3>{this.props.errMsg}</h3>
+                </div>
+            </div>
+        }else if(this.props.dish != null){
             return(
                 <div className="container">
                     <div className="row">
@@ -56,7 +69,7 @@ class DishDetailComponentClass extends Component{
                             <ListGroup>
                                 {renderComments(this.props.comments)}
                             </ListGroup>
-                            <CommentForm />
+                            <CommentForm addComments={this.props.addComments} dishId={this.props.dish.id}/>
                         </div>
                     </div>
                 </div>

@@ -11,6 +11,8 @@ function CommentForm(props){
     }
 
     const handleSubmit = (values)=>{
+        props.addComments(props.dishId , values.rating , values.name , values.comment )
+        toggleModal()
         alert("Name: " + values.name + "\nRating: " + values.rating + "\nComment: " + values.comment);
     }
 
