@@ -3,6 +3,8 @@ import {Card , CardTitle , CardImg , CardBody , CardText , ListGroup , ListGroup
 import {Link} from 'react-router-dom';
 import CommentForm from './CommentForm';
 import LoadingComponent from './LoadingComponent'
+import {baseUrl} from '../shared/baseURL';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
 
 class DishDetailComponentClass extends Component{
 
@@ -14,34 +16,44 @@ class DishDetailComponentClass extends Component{
 
         function renderDish(dish){
             return(
-                <Card>
-                    <CardImg top src={dish.image} alt={dish.name} />
-                    <CardBody>
-                        <CardTitle className="h5">{dish.name}</CardTitle>
-                        <CardText>{dish.description}</CardText>
-                    </CardBody>
-                </Card>
+                <FadeTransform
+                in
+                transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
+                    <Card>
+                        <CardImg top src={baseUrl + dish.image} alt={dish.name} />
+                        <CardBody>
+                            <CardTitle className="h5">{dish.name}</CardTitle>
+                            <CardText>{dish.description}</CardText>
+                        </CardBody>
+                    </Card>
+                </FadeTransform>
             );
         }
 
         function renderComments(comments){
             return comments.map((comment)=>{
                 return(
-                    <ListGroupItem className="border-0 p-0" key={comment.id}>
-                        <p><span>{comment.rating}</span> {comment.comment}</p> 
-                        <p>-- {comment.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
-                    </ListGroupItem>
+                    <Stagger in>
+                        <ListGroupItem className="border-0 p-0" key={comment.id}>
+                            <Fade in>
+                                <p><span>{comment.rating}</span> {comment.comment}</p> 
+                                <p>-- {comment.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
+                            </Fade>
+                        </ListGroupItem>
+                    </Stagger>
                 );
             })
         }
 
-        if(this.props.isLoading){
+        if(this.props.dishLoading){
             return <div className="container">
                 <div className="row">
                     <LoadingComponent />
                 </div>
             </div>
-        }else if(this.props.errMsg){
+        }else if(this.props.dishErrMsg){
             return <div className="container">
                 <div className="row">
                     <h3>{this.props.errMsg}</h3>
@@ -66,10 +78,10 @@ class DishDetailComponentClass extends Component{
                         </div>
                         <div className="col-12 col-md-5 m-1">
                             <h4>Comments</h4>
-                            <ListGroup>
+                            <ListGroup>               
                                 {renderComments(this.props.comments)}
                             </ListGroup>
-                            <CommentForm addComments={this.props.addComments} dishId={this.props.dish.id}/>
+                            <CommentForm postComment={this.props.postComment} dishId={this.props.dish.id}/>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import React , {useState} from 'react';
 import {BreadcrumbItem,Breadcrumb,Button,Col,Label,Row } from 'reactstrap'
 import {Link} from 'react-router-dom'
-import {Control , LocalForm , Errors} from 'react-redux-form'
+import {Control , Form , Errors , actions} from 'react-redux-form'
 
 // const required = (val) => val && val.length;
 // const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -51,7 +51,7 @@ function ContactUsTrial(props){
 
     function handleSubmit(values){
         alert("Submitted Form" +  "\n" + values)
-        console.log(values);
+        props.resetFeedbackForm()
     }
 
     return(
@@ -97,7 +97,7 @@ function ContactUsTrial(props){
                     <h3>Send us Your Feedback</h3>
                 </div>
                 <div className="col-12 col-md-9">
-                    <LocalForm onSubmit={(values)=> handleSubmit(values)}>
+                    <Form model="feedback" onSubmit={(values)=> handleSubmit(values)}>
                         <Row className="form-group">
                             <Label htmlFor="fname" className="col-2" size="lg">First Name</Label>
                             <Col md={10}>
@@ -113,15 +113,15 @@ function ContactUsTrial(props){
                                         }
                                     }
                                 />
+                                <Errors model=".firstname"
+                                    show={{touched:true , focus: false}}
+                                    messages={{
+                                        required: "Required Field",
+                                        maxLength: "Maximum Length can be 15 chars",
+                                        minLength: "Minimum Length can be 3 chars"
+                                    }}
+                                />
                             </Col>
-                            <Errors model=".firstname"
-                                show={{touched:true , focus: false}}
-                                messages={{
-                                    required: "Required Field",
-                                    maxLength: "Maximum Length can be 15 chars",
-                                    minLength: "Minimum Length can be 3 chars"
-                                }}
-                            />
                         </Row>
                         <Row className="form-group">
                             <Label htmlFor="lname" className="col-2" size="lg">Last Name</Label>
@@ -221,7 +221,7 @@ function ContactUsTrial(props){
                                 <Button type="submit" className="btn btn-primary btn-large"> Send Feedback</Button>
                             </Col>
                         </Row>
-                    </LocalForm>
+                    </Form>
                 </div>
             </div>
         </div>

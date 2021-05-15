@@ -24,6 +24,7 @@ const dishReducer = (state = {
             }
         
             case ActionTypes.ADD_DISHES:
+                console.log("Adding Dishes")
             return {
                 ...state,
                 isLoading: false,

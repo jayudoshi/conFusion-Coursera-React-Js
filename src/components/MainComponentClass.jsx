@@ -10,16 +10,22 @@ import { Collapse } from 'bootstrap';
 import About from './AboutUs';
 import ContactUsTrial from './ContactUsTrial';
 import {connect} from 'react-redux'
-import {addComments,fetchDishes} from '../redux/ActionCreators'
+import {postComment,fetchDishes,fetchComments,fetchPromos} from '../redux/ActionCreators'
+import {actions} from 'react-redux-form'
+import {TransitionGroup , CSSTransition} from 'react-transition-group'
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addComments: (dishId , rating , author , comment)=> { 
-            dispatch(addComments(dishId , rating , author , comment)) 
+        fetchDishes: () => {dispatch(fetchDishes())},
+
+        fetchComments: () => {dispatch(fetchComments())},
+        postComment: (dishId , rating , author , comment)=> { 
+            dispatch(postComment(dishId , rating , author , comment)) 
         },
 
-        fetchDishes: () => {dispatch(fetchDishes())}
+        fetchPromos: () => {dispatch(fetchPromos())},
 
+        resetFeedbackForm: () => {dispatch(actions.reset('feedback'))}
     }
 }
 
@@ -40,19 +46,19 @@ class MainClass extends Component{
 
     componentDidMount(){
         this.props.fetchDishes();
+        this.props.fetchPromos();
+        this.props.fetchComments();
     }
 
     dishWithId = ({match})=>{ 
         return (
-            <DishDetailComponentClass dish={
-                this.props.dishes.dishes.filter( dish => dish.id === parseInt(match.params.dishId))[0]
-                }
-                isLoading={this.props.dishes.isLoading}
-                errMsg={this.props.dishes.errMsg}
-                comments={
-                    this.props.comments.filter(comment => comment.dishId === parseInt(match.params.dishId))
-                    }
-                addComments = {this.props.addComments}
+            <DishDetailComponentClass dish={ this.props.dishes.dishes.filter( dish => dish.id === parseInt(match.params.dishId))[0]}
+                dishLoading={this.props.dishes.isLoading}
+                dishErrMsg={this.props.dishes.errMsg}
+                comments={ this.props.comments.comments.filter(comment => comment.dishId === parseInt(match.params.dishId))}
+                commentsLoading={this.props.comments.isLoading}
+                commentsErrMsg={this.props.comments.errMsg}
+                postComment = {this.props.postComment}
             />
         );
     }
@@ -61,28 +67,34 @@ class MainClass extends Component{
         return(
             <div className="App">
                 <Header />
-                <Switch>
-                    <Route path='/home' component={()=>{
-                        return <Home dish = {this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
-                            isLoading={this.props.dishes.isLoading}
-                            errMsg={this.props.dishes.errMsg}
-                            promotion = {this.props.promotions.filter((promotion) => promotion.featured)[0]}
-                            leader = {this.props.leaders.filter((leader) => leader.featured)[0]}
-                        />
-                        }
-                    }
-                    />
-                    <Route exact path='/menu' component={()=>{
-                        return <MenuClass dishes={this.props.dishes.dishes} 
-                                isLoading={this.props.dishes.isLoading}
-                                errMsg={this.props.dishes.errMsg}
-                            />;
-                    }}/>
-                    <Route path='/menu/:dishId' component={this.dishWithId} />
-                    <Route exact path='/contactus' component={ContactUsTrial}/>
-                    <Route path='/aboutus' component={()=> <About leaders={this.props.leaders} /> } />
-                    <Redirect to='/home' />
-                </Switch>
+                <TransitionGroup>
+                    <CSSTransition key={this.props.location.key} classNames='page' timeout={1000}>
+                        <Switch>
+                            <Route path='/home' component={()=>{
+                                return <Home dish = {this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
+                                    dishLoading={this.props.dishes.isLoading}
+                                    dishErrMsg={this.props.dishes.errMsg}
+                                    promotion = {this.props.promotions.promos.filter((promotion) => promotion.featured)[0]}
+                                    promosLoading={this.props.promotions.isLoading}
+                                    promosErrMsg={this.props.promotions.errMsg}
+                                    leader = {this.props.leaders.filter((leader) => leader.featured)[0]}
+                                />
+                                }
+                            }
+                            />
+                            <Route exact path='/menu' component={()=>{
+                                return <MenuClass dishes={this.props.dishes.dishes} 
+                                        isLoading={this.props.dishes.isLoading}
+                                        errMsg={this.props.dishes.errMsg}
+                                    />;
+                            }}/>
+                            <Route path='/menu/:dishId' component={this.dishWithId} />
+                            <Route exact path='/contactus' component={() => <ContactUsTrial resetFeedbackForm={this.props.resetFeedbackForm}/>}/>
+                            <Route path='/aboutus' component={()=> <About leaders={this.props.leaders} /> } />
+                            <Redirect to='/home' />
+                        </Switch>
+                    </CSSTransition>
+                </TransitionGroup>
                 <Footer />
             </div>           
         );

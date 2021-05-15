@@ -1,13 +1,21 @@
-import Comments from '../shared/comments';
 import * as ActionTypes from './ActionTypes'
 
-const commentReducer = (state = Comments , action) => {
+const commentReducer = (state = {
+    errMsg: null,
+    comments: []
+} , action) => {
+    
     switch(action.type){
+
+        case ActionTypes.FAILLOADING_COMMENTS:
+            return {...state ,errMsg: action.payload , comments: []}
+
         case ActionTypes.ADD_COMMENTS:
+            return {...state ,errMsg: null , comments: action.payload}
+
+        case ActionTypes.ADD_COMMENT:
             var comment = action.payload;
-            comment.id = Comments.length;
-            comment.date = new Date().toISOString();
-            return state.concat(comment)
+            return { ...state, comments: state.comments.concat(action.payload)};
         default:
             return state;
     }
