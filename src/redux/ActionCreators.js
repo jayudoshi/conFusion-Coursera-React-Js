@@ -145,3 +145,69 @@ export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos
 })
+
+//Leaders
+export const fetchLeaders = () => (dispatch) => {
+    dispatch(loadingLeaders())
+
+    fetch(baseUrl + "leaders/")
+    .then(response => {
+        if(response.ok){
+            return response
+        }else{
+            var err = new Error("Error " + response.status + ": " + response.statusText)
+            err.response = response
+            throw err
+        }
+    } , error => {
+        var err = new Error(error.message)
+        throw err
+    })
+    .then(response => response.json())
+    .then(leaders => dispatch(addLeaders(leaders)))
+    .catch(err => dispatch(failLoadingLeaders(err.message)))
+}
+
+export const loadingLeaders = () => ({
+    type: ActionTypes.LOADING_LEADERS
+})
+
+export const failLoadingLeaders = (errMsg) => ({
+    type: ActionTypes.FAILLOADING_LEADERS,
+    payload: errMsg
+})
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
+})
+
+//About Us
+export const postFeedback = (feedback) => (dispatch) => {
+    fetch(baseUrl + "feedback/" , {
+        method: "POST",
+        body: JSON.stringify(feedback),
+        headers:{
+            "content-type": "application/json"
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if(response.ok){
+            return response
+        }else{
+            var err = new Error("Error " + response.status + ": " + response.statusText );
+            throw err
+        }
+    } , error =>{
+        var err = new Error("Your Feedback was not Submiited\n" + error.message)
+        throw err
+    })
+    .then(response => response.json())
+    .then(response => {
+        alert(JSON.stringify(response))
+    })
+    .catch(err => {
+        alert("Your Feedback was not submitted\n" + err.message);
+    })
+}

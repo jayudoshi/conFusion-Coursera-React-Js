@@ -10,22 +10,21 @@ import { Collapse } from 'bootstrap';
 import About from './AboutUs';
 import ContactUsTrial from './ContactUsTrial';
 import {connect} from 'react-redux'
-import {postComment,fetchDishes,fetchComments,fetchPromos} from '../redux/ActionCreators'
+import {postComment,fetchDishes,fetchComments,fetchPromos,fetchLeaders,postFeedback} from '../redux/ActionCreators'
 import {actions} from 'react-redux-form'
 import {TransitionGroup , CSSTransition} from 'react-transition-group'
 
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchDishes: () => {dispatch(fetchDishes())},
-
         fetchComments: () => {dispatch(fetchComments())},
         postComment: (dishId , rating , author , comment)=> { 
             dispatch(postComment(dishId , rating , author , comment)) 
         },
-
         fetchPromos: () => {dispatch(fetchPromos())},
-
-        resetFeedbackForm: () => {dispatch(actions.reset('feedback'))}
+        fetchLeaders: () => {dispatch(fetchLeaders())},
+        resetFeedbackForm: () => {dispatch(actions.reset('feedback'))},
+        postFeedback: (feedback) => {dispatch(postFeedback(feedback))}
     }
 }
 
@@ -47,6 +46,7 @@ class MainClass extends Component{
     componentDidMount(){
         this.props.fetchDishes();
         this.props.fetchPromos();
+        this.props.fetchLeaders();
         this.props.fetchComments();
     }
 
@@ -77,7 +77,9 @@ class MainClass extends Component{
                                     promotion = {this.props.promotions.promos.filter((promotion) => promotion.featured)[0]}
                                     promosLoading={this.props.promotions.isLoading}
                                     promosErrMsg={this.props.promotions.errMsg}
-                                    leader = {this.props.leaders.filter((leader) => leader.featured)[0]}
+                                    leaders = {this.props.leaders.leaders.filter((leader) => leader.featured)[0]}
+                                    leadersLoading={this.props.leaders.isLoading}
+                                    leadersErrMsg={this.props.leaders.errMsg}
                                 />
                                 }
                             }
@@ -89,8 +91,8 @@ class MainClass extends Component{
                                     />;
                             }}/>
                             <Route path='/menu/:dishId' component={this.dishWithId} />
-                            <Route exact path='/contactus' component={() => <ContactUsTrial resetFeedbackForm={this.props.resetFeedbackForm}/>}/>
-                            <Route path='/aboutus' component={()=> <About leaders={this.props.leaders} /> } />
+                            <Route exact path='/contactus' component={() => <ContactUsTrial resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback}/>}/>
+                            <Route path='/aboutus' component={()=> <About leaders={this.props.leaders.leaders} leadersLoading={this.props.leaders.isLoading} leadersErrMsg={this.props.leaders.errMsg} /> } />
                             <Redirect to='/home' />
                         </Switch>
                     </CSSTransition>
